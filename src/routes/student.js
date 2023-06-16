@@ -48,7 +48,9 @@ router.get('/student-login',async(req,res)=>{
         req.body.email,
         req.body.password
        );
-
+        if(student.isVerified!=true){
+            throw new Error('student not verified')
+        }
        const token=await student.generateAuthToken();
        res.status(200).send({
         status:"ok",

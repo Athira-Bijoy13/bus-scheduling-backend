@@ -1,4 +1,6 @@
 const mongoose=require("mongoose")
+const jwt=require("jsonwebtoken");
+const bcrypt=require('bcryptjs')
 
 const admin_Schema=new mongoose.Schema(
     {
@@ -58,7 +60,7 @@ admin_Schema.methods.generateAuthToken=async function(){
 }
 
 admin_Schema.statics.findByCredentials=async(email,password)=>{
-    const admin=await admin.findOne({email})
+    const admin=await Admin.findOne({email})
     if(!admin){
         throw new Error("Unable to login")
     }

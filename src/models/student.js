@@ -24,6 +24,7 @@ const student_Schema=new mongoose.Schema(
             type:String,
             required:true,
             trim:true
+            
         },
         isVerified:{
             type:Boolean,
