@@ -35,5 +35,5 @@ const stop_Schema=new mongoose.Schema(
     }
 )
 
-const Stop=mongoose.model('BusStops',stop_Schema)
+const Stop=mongoose.model('BusStop',stop_Schema)
 module.exports=Stop;

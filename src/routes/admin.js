@@ -7,7 +7,8 @@ const Stop = require('../models/stop')
 const router=express.Router()
 var geoDistance = require('geo-distance');
 const Student = require('../models/student')
-
+const axios=require('axios');
+const DistMatrix = require('../models/distancematrix')
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const earthRadius = 6371; // Radius of the Earth in kilometers
@@ -53,7 +54,7 @@ router.post('/create-admin',async(req,res)=>{
 })
 
 
-router.get('/admin-login',async(req,res)=>{
+router.post('/admin-login',async(req,res)=>{
     try {
         const admin=await Admin.findByCredentials(
          req.body.email,
@@ -74,11 +75,47 @@ router.get('/admin-login',async(req,res)=>{
          })
      }
 })
+router.get('/student/:id',Adminauth,async(req,res)=>{
+
+    try {
+        const student=await Student.findById(req.params.id);
+        if(!student)
+            throw new Error("No student found")
+        res.status(200).send({
+            status:"ok",
+            msg:"got student",
+            data:student
+           })
+    } catch (e) {
+        res.status(400).send({
+            status:'failed',
+            msg: e.message,
+        })
+    }
+})
+
+router.get('/get-all-students',Adminauth,async(req,res)=>{
+    try {
+        const Students=await Student.find();
+        if(!Students)   
+            throw new Error('No students')
+        res.status(200).send({
+            status:"ok",
+            msg:"Got data",
+            data:Students
+        }) 
+    } catch (e) {
+        res.status(400).send({
+            status:'failed',
+            msg: e.message,
+        })
+    }
+})
 
 router.post("/create-busstop",Adminauth,async(req,res)=>{
     try {
 
-        const busStop=new Stop();
+         const busStop=new Stop()
         busStop.stop_name=req.body.stop_name;
         busStop.numOfStudents=req.body.numOfStudents;
         busStop.location.latitude=req.body.latitude;
@@ -86,13 +123,12 @@ router.post("/create-busstop",Adminauth,async(req,res)=>{
         let distance
         await busStop.save()
         const allStops=await Stop.find()
+        console.log(allStops.length);
         allStops.map((stop,index)=>{
             distance = calculateDistance(busStop.location.latitude, busStop.location.longitude,stop.location.latitude,stop.location.longitude)
             busStop.distanceArray.push({stopid:stop._id,distance:distance})
         })
         await busStop.save()
-        // const distance = calculateDistance(busStop.location.latitude, busStop.location.longitude, 9.957934290145328, 76.33811778186022)
-       //([9.96263082496751, 76.33039506594679], 9.957934290145328, 76.33811778186022)
 
         
         res.status(200).send({
@@ -110,9 +146,47 @@ router.post("/create-busstop",Adminauth,async(req,res)=>{
     }
 })
 
-router.post('/verify-student',async(req, res)=>{
+
+router.get('/route',async(req,res)=>{
+
     try {
-        const id=req.body.id
+        const allStops=await Stop.find()
+
+        let matrix=[]
+        let DistMatrix=[]
+      
+        for(let i = 0;i<allStops.length;++i ){
+            stopslength=allStops[i].distanceArray.length;
+            matrix[i]=[]
+            for(let j=0;j<=i;j++){
+                matrix[i][j]=allStops[i].distanceArray[j].distance;
+                matrix[j][i]=matrix[i][j];
+            }
+            DistMatrix.push(matrix[i])
+        }
+    
+       
+        const res1=await axios.post(`http://127.0.0.1:5000/comb`,{data:matrix})
+        console.log(res1.data);
+        res.status(200).send({
+            status:"ok",
+            msg:"matrix created",
+            data:matrix,
+            m:res1.data
+        })
+    } catch (e) {
+        res.status(400).send({
+            status:'failed',
+            msg: e.message,
+        })
+    }
+
+   
+})
+
+router.post('/verify-student/:id',Adminauth,async(req, res)=>{
+    try {
+        const id=req.params.id
         const student=await Student.findById(id);
         if(!student){
             throw new Error('No student found')

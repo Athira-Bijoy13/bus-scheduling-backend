@@ -12,7 +12,11 @@ app.use(express.json())
 app.use(StudentRoute)
 app.use(AdminRoute)
 
+app.get('/test',(req,res)=>{
+    console.log("hi")
+    res.send("hello")
 
+})
 app.listen(port,async()=>{
     console.log("Running on port "+port);
     

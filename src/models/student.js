@@ -4,9 +4,9 @@ const bcrypt=require('bcryptjs')
 
 const student_Schema=new mongoose.Schema(
     {
-        admn_no:{
+        userName:{
             type:String,
-            required:true,
+            // required:true,
             trim:true
         },
         studentName:{
@@ -40,7 +40,7 @@ const student_Schema=new mongoose.Schema(
         //     required:true,
         //     trim:true
         // },
-        // busStop:{
+        // busStopID:{
         //     type:String,
         //     required:true,
         //     trim:true
@@ -82,8 +82,8 @@ student_Schema.methods.generateAuthToken=async function(){
     return token;
 }
 
-student_Schema.statics.findByCredentials=async(email,password)=>{
-    const student=await Student.findOne({email})
+student_Schema.statics.findByCredentials=async(userName,password)=>{
+    const student=await Student.findOne({userName})
     if(!student){
         throw new Error("Unable to login")
     }

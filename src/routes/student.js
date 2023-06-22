@@ -23,31 +23,17 @@ router.post('/create-student',async(req,res)=>{
 })
 
 
-router.get('/get-all-students',async(req,res)=>{
-    try {
-        const Students=await Student.find();
-        if(!Students)   
-            throw new Error('No students')
-        res.status(200).send({
-            status:"ok",
-            msg:"Got data",
-            data:Students
-        }) 
-    } catch (e) {
-        res.status(400).send({
-            status:'failed',
-            msg: e.message,
-        })
-    }
-})
 
 
-router.get('/student-login',async(req,res)=>{
+
+router.post('/student-login',async(req,res)=>{
     try {
+        console.log(req.body);
        const student=await Student.findByCredentials(
-        req.body.email,
+        req.body.userName,
         req.body.password
        );
+       console.log(req.body);
         if(student.isVerified!=true){
             throw new Error('student not verified')
         }
@@ -80,6 +66,7 @@ router.get('/student/me',auth,async(req,res)=>{
         })
     }
 })
+
 
 
 module.exports=router;
