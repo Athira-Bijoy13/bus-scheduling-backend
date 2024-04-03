@@ -10,7 +10,7 @@ const app=express();
 const port=8001;
 app.use(cors())
 app.use(express.json())
-app.use("/user",UserRoute)
+app.use("/api/user",UserRoute)
 // app.use(StudentRoute)
 // app.use(AdminRoute)
 // app.use(BusRoute)
