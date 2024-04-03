@@ -1,6 +1,7 @@
 const mongoose=require('mongoose')
 const url=`mongodb+srv://athirabijoy:miniproject@cluster0.psdfiuq.mongodb.net/`
 
+
 const connectionParams={
     useNewUrlParser:true,
     useUnifiedTopology:true

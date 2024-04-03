@@ -9,7 +9,8 @@ var geoDistance = require('geo-distance');
 const Student = require('../models/student')
 const axios=require('axios');
 const DistMatrix = require('../models/distancematrix')
-
+const Bus = require('../models/bus')
+const url=`http://127.0.0.1:5000/comb`
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const earthRadius = 6371; // Radius of the Earth in kilometers
   
@@ -30,7 +31,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = earthRadius * c;
   
-    return distance;  // in kilometers
+    return Math.round(distance*1000);  // in kilometers
   }
   
  
@@ -164,15 +165,36 @@ router.get('/route',async(req,res)=>{
             }
             DistMatrix.push(matrix[i])
         }
-    
-       
-        const res1=await axios.post(`http://127.0.0.1:5000/comb`,{data:matrix})
-        console.log(res1.data);
+        
+        let buses=await Bus.find();
+        noOfBus=buses.length
+       console.log(matrix);
+       console.log(noOfBus);
+        // const res1=await axios.post(url,{data:matrix,size:noOfBus})
+        // console.log(res1.data);
+        // let route=res1.data.route;
+        
+      
+        // if(!buses)
+        //     throw new Error("No bus found!")
+
+        // buses.map(async(bus,index)=>{
+           
+        //     bus.schedule=[]
+        //     for(let i=0;i<route[index].length;i++){
+        //         bus.schedule.push({stopID:allStops[route[index][i]]._id,name:allStops[route[index][i]].stop_name})
+        //     }
+            
+        
+        //     await bus.save()
+        // })
+      
+        
         res.status(200).send({
             status:"ok",
-            msg:"matrix created",
-            data:matrix,
-            m:res1.data
+            msg:"route",
+            
+            bus_routes:buses
         })
     } catch (e) {
         res.status(400).send({
@@ -184,7 +206,7 @@ router.get('/route',async(req,res)=>{
    
 })
 
-router.post('/verify-student/:id',Adminauth,async(req, res)=>{
+router.get('/verify-student/:id',Adminauth,async(req, res)=>{
     try {
         const id=req.params.id
         const student=await Student.findById(id);
@@ -195,7 +217,7 @@ router.post('/verify-student/:id',Adminauth,async(req, res)=>{
         await student.save()
         res.status(200).send({
             status:"ok",
-            msg:"created bus stop",
+            msg:"verified student",
             data:student
            })
 
