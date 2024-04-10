@@ -8,6 +8,9 @@ const driver_schema=new mongoose.Schema(
         },
         phone:{
             type:String
+        },
+        loction:{
+            type:String
         }
 
     },

@@ -17,8 +17,10 @@ const student_Schema=new mongoose.Schema(
             trim:true
         },
         busStopID:{
-            type:String,
-            trim:true
+          
+                ref:"Stop",
+                type:mongoose.Schema.Types.ObjectId
+            
         },
        
     },
