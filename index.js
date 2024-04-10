@@ -19,7 +19,7 @@ app.use("/api/busroute",Busroute)
 
 app.get('/test',(req,res)=>{
     console.log("hi")
-    res.send("hello")
+    res.send("helllllooo")
 
 })
 app.get("/", (req, res) => res.send("Express on Vercel"));
