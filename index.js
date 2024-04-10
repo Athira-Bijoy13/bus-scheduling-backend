@@ -1,12 +1,12 @@
 const express=require('express')
 const cors = require('cors')
 
-require('../src/database/mongoose')
+require('./src/database/mongoose')
 // const StudentRoute=require('./routes/student')
 // const AdminRoute=require('./routes/admin')
 // const BusRoute=require('./routes/bus')
-const UserRoute=require('../src/routes/user');
-const Busroute = require('../src/routes/bus_route');
+const UserRoute=require('./src/routes/user');
+const Busroute = require('./src/routes/bus_route');
 const app=express();
 const port=process.env.PORT||8000
 app.use(cors())
@@ -22,10 +22,7 @@ app.get('/test',(req,res)=>{
     res.send("hello")
 
 })
-app.get('/api', (req, res) => {
-    const ip = req.ip; // Get the IP address of the requester
-    res.send(`Your IP address is: ${ip}`);
-});
+app.get("/", (req, res) => res.send("Express on Vercel"));
 
 app.listen(port,async()=>{
     console.log("Running on port "+port);
