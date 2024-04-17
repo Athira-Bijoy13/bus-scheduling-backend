@@ -12,17 +12,7 @@ const bus_Schema=new mongoose.Schema(
             required:true
 
         },
-        schedule:[
-            {
-            stopID:{
-                type:String, 
-            },
-            name:{
-                type:String
-            }
-        
-            }
-        ]
+       
     },
     {
         timestamps:true

@@ -62,13 +62,13 @@ user_Schema.methods.generateAuthToken=async function(){
 }
 
 user_Schema.statics.findByCredentials=async(userID,password)=>{
-    const user=await User.findOne({userID})
+    const user=await User.findOne({userID:userID})
     if(!user){
         throw new Error("Unable to login")
     }
     const isMatch=await bcrypt.compare(password,user.password)
     if(!isMatch){
-        throw new Error("Unable to login")
+        throw new Error("Password incorrect")
     }
     return user;
 }

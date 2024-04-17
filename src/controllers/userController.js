@@ -89,6 +89,19 @@ const createDriver=async(req,res)=>{
     }
 }
 
+const getusers=async(req,res)=>{
+    try {
+        const users=await User.find()
+        res.send({
+            data:users
+        })
+    } catch (e) {
+        res.status(400).send({
+            status:'failed',
+            msg: e.message,
+        })
+    }
+}
 
 
 const userSignin=async(req,res)=>{
@@ -149,4 +162,5 @@ module.exports={
     createDriver,
     userSignin,
     getUser,
+    getusers,
 }

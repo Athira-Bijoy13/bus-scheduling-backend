@@ -113,38 +113,8 @@ router.get('/get-all-students',Adminauth,async(req,res)=>{
     }
 })
 
-router.post("/create-busstop",Adminauth,async(req,res)=>{
-    try {
-
-         const busStop=new Stop()
-        busStop.stop_name=req.body.stop_name;
-        busStop.numOfStudents=req.body.numOfStudents;
-        busStop.location.latitude=req.body.latitude;
-        busStop.location.longitude=req.body.longitude;
-        let distance
-        await busStop.save()
-        const allStops=await Stop.find()
-        console.log(allStops.length);
-        allStops.map((stop,index)=>{
-            distance = calculateDistance(busStop.location.latitude, busStop.location.longitude,stop.location.latitude,stop.location.longitude)
-            busStop.distanceArray.push({stopid:stop._id,distance:distance})
-        })
-        await busStop.save()
-
-        
-        res.status(200).send({
-            status:"ok",
-            msg:"created bus stop",
-            
-            data:busStop
-           })
-        
-    } catch (e) {
-        res.status(400).send({
-            status:'failed',
-            msg: e.message,
-        })
-    }
+router.post("/create-busstop",auth,async(req,res)=>{
+ 
 })
 
 
@@ -168,26 +138,8 @@ router.get('/route',async(req,res)=>{
         
         let buses=await Bus.find();
         noOfBus=buses.length
-       console.log(matrix);
-       console.log(noOfBus);
-        // const res1=await axios.post(url,{data:matrix,size:noOfBus})
-        // console.log(res1.data);
-        // let route=res1.data.route;
+       
         
-      
-        // if(!buses)
-        //     throw new Error("No bus found!")
-
-        // buses.map(async(bus,index)=>{
-           
-        //     bus.schedule=[]
-        //     for(let i=0;i<route[index].length;i++){
-        //         bus.schedule.push({stopID:allStops[route[index][i]]._id,name:allStops[route[index][i]].stop_name})
-        //     }
-            
-        
-        //     await bus.save()
-        // })
       
         
         res.status(200).send({

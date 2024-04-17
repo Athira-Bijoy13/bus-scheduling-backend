@@ -1,7 +1,7 @@
 const express=require('express')
 const Stop = require('../models/stop')
 const Bus = require('../models/bus')
-const Adminauth = require('../middleware/adminauth')
+
 const auth = require('../middleware/authentication')
 const router=express.Router()
 
@@ -50,7 +50,7 @@ router.get('/get-stop/:id',async(req,res)=>{
 })
 
 
-router.post('/create-bus',Adminauth,async(req,res)=>{
+router.post('/create-bus',auth ,async(req,res)=>{
     try {
         
         const bus=new Bus(req.body)
@@ -75,23 +75,12 @@ router.get('/get-all-buses',async(req,res)=>{
     try {
        
         const buses=await Bus.find()
-        let array=[]
-   
-        buses.map((bus,index)=>{
-            let busarray=[]
-            bus.schedule.map((stop,i)=>{
-                busarray.push(stop.name)
-            })
-            array.push(busarray)
-        })
-        if(!buses)
-            throw new Error("No bus found")
-        
+       
         res.status(200).send({
             status:"ok",
             msg:"got data",
             data:buses,
-            array:array
+           
         })
         
 
