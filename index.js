@@ -20,7 +20,7 @@ app.use("/api/busroute",Busroute)
 // app.use(BusRoute)
 
 app.get('/api/get-all-stops',buscontroller.getAllStops);
-app.get('/test',async(req,res)=>{
+app.get('/api/test',async(req,res)=>{
     const stops=await Stop.find()
     if(!stops)
         throw new Error("No bus stops")
