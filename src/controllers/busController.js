@@ -1,3 +1,5 @@
+const { default: axios } = require("axios")
+const Bus = require("../models/bus")
 const BusRoute = require("../models/busroute")
 const Driver = require("../models/driver")
 const Stop = require("../models/stop")
@@ -98,31 +100,70 @@ const getAllStops=async(req,res)=>{
 
 const generateBusRoutes=async(req,res)=>{
     try {
-        console.log("hh")
-        //     const allStops=await Stop.find()
     
-        //     let matrix=[]
-        //     let DistMatrix=[]
-          
-        //     for(let i = 0;i<allStops.length;++i ){
-        //         stopslength=allStops[i].distanceArray.length;
-        //         matrix[i]=[]
-        //         for(let j=0;j<=i;j++){
-        //             matrix[i][j]=allStops[i].distanceArray[j].distance;
-        //             matrix[j][i]=matrix[i][j];
-        //         }
-        //         DistMatrix.push(matrix[i])
-        //     }
+            const allStops=await Stop.find()
+    
+            let matrix=[]
+            let DistMatrix=[]
+            no_of_students=[]
+            total_students=0
+            for(let i = 0;i<allStops.length;++i ){
+                stopslength=allStops[i].distanceArray.length;
+                no_of_students.push(allStops[i].numOfStudents)
+                total_students=total_students+allStops[i].numOfStudents
+                matrix[i]=[]
+                for(let j=0;j<=i;j++){
+                    matrix[i][j]=allStops[i].distanceArray[j].distance;
+                    matrix[j][i]=matrix[i][j];
+                }
+                DistMatrix.push(matrix[i])
+            }
             
-        //     let buses=await Bus.find();
-        //     noOfBus=buses.length
-        //    console.log(DistMatrix)
+            let buses=await Bus.find();
+           no_buses=buses.length;
+           num_locations=allStops.length;
+           bus_capacity=parseInt((total_students/no_buses)/4)*4+5
+         
+        //    console.log(DistMatrix,no_of_students)
+        //    console.log(num_locations,bus_capacity,no_buses,total_students)
+           const result=await axios.post(`http://127.0.0.1:5000/generate-busroute`,{
+            data:DistMatrix,
+            num_locations,
+            no_buses,
+            no_of_students,
+            bus_capacity
+
+        })
+           console.log(result.data);
+           bus_route=result.data.route;
+           promises=[]
+           const delete_busroute=await BusRoute.deleteMany()
+           bus_capacities=result.data.bus_capacities;
+           await Promise.all(bus_route.map(async(route,i)=>{
+            busRoute=new BusRoute();
+            array=[]
+            route.map((stop,ind)=>{
+                stop_id=allStops[stop]._id
+                busRoute.stops.push(stop_id)
+            })
+            console.log(route);
+            promises.push(busRoute.save())
+            
+           }))
+          
+           
+           
+
+
             
           
             
             res.status(200).send({
                 status:"ok",
                 msg:"route",
+                r:result.status,
+               
+                
                 
               
             })

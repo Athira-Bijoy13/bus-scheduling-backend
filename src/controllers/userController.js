@@ -71,6 +71,8 @@ const createDriver=async(req,res)=>{
         await user.save();
 
         const driver=new Driver(req.body);
+        driver.location.latitude=req.body.latitude;
+        driver.location.longitude=req.body.longitude;
         driver.user_id=user._id;
         await driver.save();
         res.status(200).send({
@@ -156,6 +158,48 @@ const getUser=async(req,res)=>{
 
 }
 
+const getStudentByID=async(req,res)=>{
+    try {
+        const id=req.params.id;
+        const student=await Student.findOne({user_id:id})
+        const user=await User.findById(id)
+        res.status(200).send({
+            status:"ok",
+            msg:"got student details",
+            data:{
+                user,
+               student
+            }
+        })
+    } catch (e) {
+        res.status(400).send({
+            status:'failed',
+            msg: e.message,
+        }) 
+    }
+}
+
+const getDriverByID=async(req,res)=>{
+    try {
+        const id=req.params.id;
+        const driver=await Driver.findOne({user_id:id})
+        const user=await User.findById(id)
+        res.status(200).send({
+            status:"ok",
+            msg:"got driver details",
+            data:{
+                user,
+               driver,
+
+            }
+        })
+    } catch (e) {
+        res.status(400).send({
+            status:'failed',
+            msg: e.message,
+        }) 
+    }
+}
 module.exports={
     createAdmin,
     createStudent,
@@ -163,4 +207,6 @@ module.exports={
     userSignin,
     getUser,
     getusers,
+    getStudentByID,
+    getDriverByID
 }

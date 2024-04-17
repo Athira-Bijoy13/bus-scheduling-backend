@@ -11,7 +11,11 @@ router.post("/create-driver",usercontroller.createDriver);
 
 router.post("/signin",usercontroller.userSignin);
 
-router.get("/get-all-users",usercontroller.getusers);
+router.get("/get-all-users",auth,usercontroller.getusers);
+
+router.get("/get-student-by-id/:id",auth,usercontroller.getStudentByID);
+
+router.get("/get-driver-by-id/:id",auth,usercontroller.getDriverByID);
 
 router.get("/me",auth,usercontroller.getUser);
 

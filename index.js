@@ -6,9 +6,7 @@ require('./src/database/mongoose')
 // const AdminRoute=require('./routes/admin')
 // const BusRoute=require('./routes/bus')
 const UserRoute=require('./src/routes/user');
-const Busroute = require('./src/routes/busRoute');
-const buscontroller = require('./src/controllers/busController');
-const Stop = require('./src/models/stop');
+const Busroute = require('./src/routes/bus_route');
 const app=express();
 const port=process.env.PORT||8000
 app.use(cors())
@@ -19,17 +17,9 @@ app.use("/api/busroute",Busroute)
 // app.use(AdminRoute)
 // app.use(BusRoute)
 
-app.get('/api/get-all-stops',buscontroller.getAllStops);
-app.get('/api/test',async(req,res)=>{
-    const stops=await Stop.find()
-    if(!stops)
-        throw new Error("No bus stops")
-    
-    res.status(200).send({
-        status:"ok",
-        msg:"got all stops",
-        data:stops
-    })
+app.get('/test',(req,res)=>{
+    console.log("hi")
+    res.send("helllllooo")
 
 })
 app.get("/", (req, res) => res.send("Express on Vercel"));
