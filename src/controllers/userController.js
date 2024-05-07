@@ -158,6 +158,29 @@ const getUser=async(req,res)=>{
 
 }
 
+
+const userLogOut=async(req,res)=>{
+
+    try {
+        req.token=req.header("Authorization").replace('Bearer ','')
+    
+        req.user.tokens = req.user.tokens.filter(
+            (token) => token.token != req.token
+          );
+        await req.user.save();
+        res.status(200).send({
+            status:"ok",
+            msg:"user logged out",      
+        })
+
+    } catch (e) {
+        res.status(400).send({
+            status:"failed",
+            msg:e.message
+        }) 
+    }
+}
+
 const getStudentByID=async(req,res)=>{
     try {
         const id=req.params.id;
@@ -200,13 +223,32 @@ const getDriverByID=async(req,res)=>{
         }) 
     }
 }
+
+const updateStudentLocation=async(req,res)=>{
+    try {
+        const user_id=req.user;
+        const student=await Student.findOneAndUpdate({user_id:user_id},{busStopID:req.body.stop_id})
+        res.status(200).send({
+            status:"ok",
+            msg:"got driver details",
+            data:student
+        })
+    } catch (e) {
+        res.status(400).send({
+            status:'failed',
+            msg: e.message,
+        }) 
+    }
+}
 module.exports={
     createAdmin,
     createStudent,
     createDriver,
     userSignin,
+    userLogOut,
     getUser,
     getusers,
     getStudentByID,
-    getDriverByID
+    getDriverByID,
+    updateStudentLocation,
 }

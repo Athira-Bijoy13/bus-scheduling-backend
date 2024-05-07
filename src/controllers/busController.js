@@ -24,7 +24,7 @@ const updateDriverLocation=async(req,res)=>{
 
 const getDriverLocation=async(req,res)=>{
     try {
-        const student=await Student.findOne({user_id:req.user})
+        const student=await Student.findOne({user_id:req.user._id})
         if(!student)
             throw new Error("No student found")
         const busroute=await BusRoute.findOne({stops:[student.busStopID]}).populate(['driver']).exec();
@@ -120,12 +120,16 @@ const generateBusRoutes=async(req,res)=>{
             }
             
             let buses=await Bus.find();
-           no_buses=buses.length;
+            bus_capacity=25
+            if(total_students/bus_capacity>buses.length)
+                throw new Error("Not enough buses available to accomodate all students")
+            
+           no_buses=Math.ceil(total_students/bus_capacity)
            num_locations=allStops.length;
-           bus_capacity=parseInt((total_students/no_buses)/4)*4+5
+          
          
-        //    console.log(DistMatrix,no_of_students)
-        //    console.log(num_locations,bus_capacity,no_buses,total_students)
+           console.log(DistMatrix,no_of_students)
+           console.log(num_locations,bus_capacity,no_buses,total_students)
            const result=await axios.post(`http://127.0.0.1:5000/generate-busroute`,{
             data:DistMatrix,
             num_locations,
@@ -135,7 +139,8 @@ const generateBusRoutes=async(req,res)=>{
 
         })
            console.log(result.data);
-           bus_route=result.data.route;
+           bus_route=result.data.data.route;
+           total_distance=result.data.data.min_distance
            promises=[]
            const delete_busroute=await BusRoute.deleteMany()
            bus_capacities=result.data.bus_capacities;
@@ -146,22 +151,20 @@ const generateBusRoutes=async(req,res)=>{
                 stop_id=allStops[stop]._id
                 busRoute.stops.push(stop_id)
             })
-            console.log(route);
+            // console.log(route);
             promises.push(busRoute.save())
             
            }))
-          
-           
-           
 
-
-            
-          
-            
+           await Promise.all(promises)
+         
+            const b=await BusRoute.find()
             res.status(200).send({
                 status:"ok",
                 msg:"route",
                 r:result.status,
+                distance:total_distance,
+                b
                
                 
                 
@@ -169,6 +172,7 @@ const generateBusRoutes=async(req,res)=>{
             })
       
     } catch (e) {
+        console.log(e)
         res.status(400).send({
             status:'failed',
             msg: e.message,
@@ -179,6 +183,7 @@ const generateBusRoutes=async(req,res)=>{
 module.exports={
     updateDriverLocation,
     getDriverLocation,
+    createBusRoutes,
     getAllStops,
     generateBusRoutes,
 }
